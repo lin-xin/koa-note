@@ -7,13 +7,15 @@ const koa = require('koa'),
     logger = require('koa-logger');
 
 const db = require('./config/db.js'),
-    errorHandle = require('./middlewares/errorHandle.js');
+    errorHandle = require('./middlewares/errorHandle.js'),
+    sendHandle = require('./middlewares/sendHandle.js');
 
 const user = require('./routes/user.js');
 
 app.use(json());
 app.use(bodyparser());
 app.use(logger());
+app.use(sendHandle());
 app.use(errorHandle);
 app.use(jwt({
         secret: 'note_token'

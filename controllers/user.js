@@ -14,13 +14,7 @@ class UserController{
             email: data.email
         })
         const result = await user.save();
-        if(result !== null){
-            ctx.body = {
-                code: 200,
-                msg: '注册成功',
-                data: result
-            }
-        }
+        return result !== null ? ctx.send(result, '注册成功') : ctx.sendError(400, '注册失败');
     }
     // 用户登录
     static async login(ctx) {
@@ -34,60 +28,46 @@ class UserController{
                 name: result.name,
                 _id: result._id
             }, 'note_token', { expiresIn: '8h' });
-            ctx.body ={
-                code: 200,
-                msg: '登录成功',
-                data: token
-            }
+            return ctx.send(token, '登录成功');
         }else{
-            ctx.body ={
-                code: 404,
-                msg: '登录失败',
-                data: null
-            }
+            return ctx.sendError(400, '注册失败');
         }
     }
     // 获取用户信息
     static async userinfo(ctx){
         const data = ctx.state.user;
         const user = await userModel.findById(data._id);
+
         if(user !== null){
-            ctx.body ={
-                code: 200,
-                msg: '请求成功',
-                data: {
-                    _id: user._id,
-                    name: user.name,
-                    email: user.email,
-                    avatar: user.avatar
-                }
-            }
+            const result = {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                avatar: user.avatar
+            };
+            return ctx.send(result);
+        }else{
+            return ctx.sendError(400);
         }
     }
     // 更新用户头像
     static async avatar(ctx){
         const avatar = ctx.request.body.avatar;
         if(avatar === undefined || avatar === ''){
-            return ctx.body = {
-                code: 400,
-                msg: '参数不合法',
-                data: null
-            }
+            return ctx.sendError(400, '参数不合法');
         }
         const user = await userModel.findById(ctx.state.user._id);
         user.avatar = avatar;
         const result = await user.save();
         if(result !== null){
-            ctx.body ={
-                code: 200,
-                msg: '请求成功',
-                data: {
-                    _id: user._id,
-                    name: user.name,
-                    email: user.email,
-                    avatar: user.avatar
-                }
-            }
+            return ctx.send({
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                avatar: user.avatar
+            });
+        }else{
+            return ctx.sendError(400);
         }
     }
 }
