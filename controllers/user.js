@@ -7,7 +7,6 @@ class UserController{
     // 用户注册
     static async register(ctx) {
         const data = ctx.request.body;
-            
         const user = new userModel({
             name: data.name,
             password: crypto.createHash('md5').update(data.password).digest('hex'),
@@ -19,6 +18,9 @@ class UserController{
     // 用户登录
     static async login(ctx) {
         const data = ctx.request.body;
+        if(!data.name || !data.password){
+            return ctx.sendError(400, '参数不合法');
+        }
         const result = await userModel.findOne({
             name: data.name,
             password: crypto.createHash('md5').update(data.password).digest('hex')
@@ -30,7 +32,7 @@ class UserController{
             }, 'note_token', { expiresIn: '8h' });
             return ctx.send(token, '登录成功');
         }else{
-            return ctx.sendError(400, '注册失败');
+            return ctx.sendError(400, '用户名或密码错误');
         }
     }
     // 获取用户信息
