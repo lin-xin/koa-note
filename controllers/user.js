@@ -7,13 +7,20 @@ class UserController{
     // 用户注册
     static async register(ctx) {
         const data = ctx.request.body;
+        const checkUser = await userModel.findOne({
+            name: data.name
+        });
+        console.log(checkUser);
+        if(checkUser !== null){
+            return ctx.sendError(400, '该用户名已存在');
+        }
         const user = new userModel({
             name: data.name,
             password: crypto.createHash('md5').update(data.password).digest('hex'),
             email: data.email
         })
         const result = await user.save();
-        return result !== null ? ctx.send(result, '注册成功') : ctx.sendError(400, '注册失败');
+        return result !== null ? ctx.send(null, '注册成功') : ctx.sendError(400, '注册失败');
     }
     // 用户登录
     static async login(ctx) {
