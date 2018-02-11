@@ -10,7 +10,8 @@ const db = require('./config/db.js'),
     errorHandle = require('./middlewares/errorHandle.js'),
     sendHandle = require('./middlewares/sendHandle.js');
 
-const user = require('./routes/user.js');
+const user = require('./routes/user.js'),
+    folder = require('./routes/folder.js');
 
 app.use(json());
 app.use(bodyparser());
@@ -24,6 +25,7 @@ app.use(jwt({
     }));
 
 router.use('/user', user.routes());
+router.use('/folder', folder.routes());
 app.use(router.routes());
 
 app.listen('3000', () => {

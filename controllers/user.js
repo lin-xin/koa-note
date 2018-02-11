@@ -1,16 +1,14 @@
-const router = require('koa-router')(),
-    crypto = require('crypto'),
+const crypto = require('crypto'),
     jwt = require('jsonwebtoken'),
     userModel = require('../models/userModel.js');
 
-class UserController{
+class UserController {
     // 用户注册
     static async register(ctx) {
         const data = ctx.request.body;
         const checkUser = await userModel.findOne({
             name: data.name
         });
-        console.log(checkUser);
         if(checkUser !== null){
             return ctx.sendError(400, '该用户名已存在');
         }
