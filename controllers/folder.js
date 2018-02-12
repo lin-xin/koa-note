@@ -1,4 +1,5 @@
-const folderModel = require('../models/folderModel.js');
+const mongoose = require('mongoose'),
+    folderModel = require('../models/folderModel.js');
 
 class FolderController {
 
@@ -19,7 +20,7 @@ class FolderController {
     static async delete(ctx){
         const user = ctx.state.user,
             data = ctx.request.body;
-        if(!data._id){
+        if(!mongoose.Types.ObjectId.isValid(data._id)){
             return ctx.sendError(400, '参数不合法');
         }
         const folder = await folderModel.findById(data._id);
@@ -43,7 +44,12 @@ class FolderController {
 
     // 修改文件夹
     static async update(ctx){
-
+        const data = ctx.request.body;
+        if(!data.title || !mongoose.Types.ObjectId.isValid(data._id)){
+            return ctx.sendError(401, '参数不合法');
+        }
+        const result = await folderModel.findByIdAndUpdate(data._id, {title: data.title}, {new: true});
+        return result !== null ? ctx.send(result) : ctx.sendError(400);
     }
 }
 
