@@ -1,24 +1,24 @@
 const sendHandle = () => {
     // 处理请求成功方法
     const render = ctx => {
-        return (data, msg) => {
+        return (data, msg = '请求成功') => {
             ctx.set('Content-Type', 'application/json');
             ctx.body = {
                 code: 200,
-                data: data,
-                msg: msg || '请求成功'
+                data,
+                msg
             }
         }
     }
     
     // 处理请求失败方法
     const renderError = ctx => {
-        return (code, msg) => {
+        return (code, msg = '请求失败') => {
             ctx.set('Content-Type', 'application/json');
             ctx.body = {
-                code: code,
+                code,
                 data: null,
-                msg: msg || '请求失败'
+                msg
             }
         }
     }

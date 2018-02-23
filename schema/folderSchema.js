@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const folderSchema = new mongoose.Schema({
+const folderSchema = new Schema({
     title: String,
     author: {
         type: Schema.Types.ObjectId,
