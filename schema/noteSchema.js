@@ -18,7 +18,10 @@ const noteSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'folder'
     },
-    type: Number,
+    type: {
+        type: Number,
+        default: 1
+    },
     active: {
         type: Number,
         default: 1
