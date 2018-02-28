@@ -40,6 +40,24 @@ class NoteController {
         const result = await noteModel.findByIdAndUpdate(data._id, data, {new: true});
         return result !== null ? ctx.send(result) : ctx.sendError(400);
     }
+
+    // 查找文件夹下的笔记
+    static async find(ctx){
+        const data = ctx.request.body,
+            user = ctx.state.user;
+        if(!mongoose.Types.ObjectId.isValid(data.folder)){
+            return ctx.sendError(401, '参数不合法');
+        }
+        const result = await noteModel.find({folder: data.folder, author: user._id, active: 1}).populate('author', 'name -_id').exec();
+        return result !== null ? ctx.send(result) : ctx.sendError(400);
+    }
+
+    // 查找全部笔记
+    static async all(ctx){
+        const user = ctx.state.user;
+        const result = await noteModel.find({author: user._id, active: 1}).populate('author', 'name -_id').exec();
+        return result !== null ? ctx.send(result) : ctx.sendError(400);
+    }
 }
 
 module.exports = NoteController;
