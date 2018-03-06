@@ -48,14 +48,24 @@ class NoteController {
         if(!mongoose.Types.ObjectId.isValid(data.folder)){
             return ctx.sendError(401, '参数不合法');
         }
-        const result = await noteModel.find({folder: data.folder, author: user._id, active: 1}).populate('author', 'name -_id').exec();
+        const result = await noteModel.find({folder: data.folder, author: user._id, active: 1}).populate('author folder', 'name title -_id').exec();
         return result !== null ? ctx.send(result) : ctx.sendError(400);
     }
 
     // 查找全部笔记
     static async all(ctx){
         const user = ctx.state.user;
-        const result = await noteModel.find({author: user._id, active: 1}).populate('author', 'name -_id').exec();
+        const result = await noteModel.find({author: user._id, active: 1}).populate('author folder', 'name title -_id').exec();
+        return result !== null ? ctx.send(result) : ctx.sendError(400);
+    }
+
+    // 获取笔记详情
+    static async detail(ctx){
+        const id = ctx.params.id;
+        if(!mongoose.Types.ObjectId.isValid(id)){
+            return ctx.sendError(401, '参数不合法');
+        }
+        const result = await noteModel.findById(id).populate('author folder', 'name title -_id').exec();
         return result !== null ? ctx.send(result) : ctx.sendError(400);
     }
 }
