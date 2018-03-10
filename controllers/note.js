@@ -10,7 +10,12 @@ class NoteController {
         }
         data.author = user._id;
         const result = await noteModel.create(data);
-        return result !== null ? ctx.send(result) : ctx.sendError(400);
+        if(result){
+            const note = await noteModel.findById(result._id).populate('folder','title -_id').exec();
+            ctx.send(note);
+        }else{
+            ctx.sendError(400);
+        }
     }
 
     static async delete(ctx){
@@ -48,14 +53,14 @@ class NoteController {
         if(!mongoose.Types.ObjectId.isValid(data.folder)){
             return ctx.sendError(401, '参数不合法');
         }
-        const result = await noteModel.find({folder: data.folder, author: user._id, active: 1}).populate('author folder', 'name title -_id').exec();
+        const result = await noteModel.find({folder: data.folder, author: user._id, active: 1}).populate('folder', 'title -_id').sort({'updated_at': -1}).exec();
         return result !== null ? ctx.send(result) : ctx.sendError(400);
     }
 
     // 查找全部笔记
     static async all(ctx){
         const user = ctx.state.user;
-        const result = await noteModel.find({author: user._id, active: 1}).populate('author folder', 'name title -_id').exec();
+        const result = await noteModel.find({author: user._id, active: 1}).populate('folder', 'title -_id').sort({'updated_at': -1}).exec();
         return result !== null ? ctx.send(result) : ctx.sendError(400);
     }
 
@@ -65,7 +70,7 @@ class NoteController {
         if(!mongoose.Types.ObjectId.isValid(id)){
             return ctx.sendError(401, '参数不合法');
         }
-        const result = await noteModel.findById(id).populate('author folder', 'name title -_id').exec();
+        const result = await noteModel.findById(id).populate('folder', 'title -_id').exec();
         return result !== null ? ctx.send(result) : ctx.sendError(400);
     }
 }
