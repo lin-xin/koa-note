@@ -1,5 +1,6 @@
-const mongoose = require('mongoose'),
-    noteModel = require('../models/noteModel.js');
+const mongoose = require('mongoose');
+const noteModel = require('../models/noteModel.js');
+const folderModel = require('../models/folderModel.js');
 
 class NoteController {
     static async create(ctx){
@@ -53,8 +54,9 @@ class NoteController {
         if(!mongoose.Types.ObjectId.isValid(data.folder)){
             return ctx.sendError(401, '参数不合法');
         }
-        const result = await noteModel.find({folder: data.folder, author: user._id, active: 1}).populate('folder', 'title -_id').sort({'updated_at': -1}).exec();
-        return result !== null ? ctx.send(result) : ctx.sendError(400);
+        const noteResult = await noteModel.find({folder: data.folder, author: user._id, active: 1}).populate('folder', 'title -_id').sort({'updated_at': -1}).exec();
+        const folderResult = await folderModel.find({parent: data.folder}).sort({'updated_at': -1}).exec();
+        return noteResult !== null ? ctx.send({data:noteResult,folders:folderResult}) : ctx.sendError(400);
     }
 
     // 查找全部笔记
